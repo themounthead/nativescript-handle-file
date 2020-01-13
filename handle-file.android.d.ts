@@ -7,11 +7,11 @@ export interface Params {
 }
 export declare class HandleFile extends Observable {
     readonly directories: {
-        "downloads": any;
-        "pictures": any;
-        "movies": any;
-        "music": any;
+        "downloads": string;
+        "pictures": string;
+        "movies": string;
+        "music": string;
     };
     open(params: Params): Promise<boolean>;
-    private findExtension(extension);
+    private findExtension;
 }

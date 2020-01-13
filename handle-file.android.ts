@@ -12,31 +12,48 @@ export interface Params {
 
 export class HandleFile extends Observable {
     readonly directories = {
-        "downloads" : android.os.Environment.DIRECTORY_DOWNLOADS,
-        "pictures" : android.os.Environment.DIRECTORY_PICTURES,
+        "downloads": android.os.Environment.DIRECTORY_DOWNLOADS,
+        "pictures": android.os.Environment.DIRECTORY_PICTURES,
         "movies": android.os.Environment.DIRECTORY_MOVIES,
         "music": android.os.Environment.DIRECTORY_MUSIC
     };
 
     public open(params: Params): Promise<boolean> {
         let directoryDestiny: string = params.directory == undefined ? this.directories["downloads"] : this.directories[params.directory];
-        let androidDownloadsPath: any = global.android.os.Environment.getExternalStoragePublicDirectory(directoryDestiny).toString();
+        let androidDownloadsPath: any = android.os.Environment.getExternalStoragePublicDirectory(directoryDestiny).toString();
         let filePath: string = fs.path.join(androidDownloadsPath, params.name);
+        let webUrl: string = params.url.substr(0, params.url.indexOf('?'));
         var extension = params.url.split('.').pop();
         var title: string = params.title == undefined ? "Open file..." : params.title;
 
         return http.getFile(params.url, filePath).then((file: fs.File) => {
             try {
-                let intent = new android.content.Intent(android.content.Intent.ACTION_VIEW);
-                let mimeType = this.findExtension(extension);
-                intent.setDataAndType(android.net.Uri.fromFile(new java.io.File(file.path)), mimeType);
-                application.android.currentContext.startActivity(android.content.Intent.createChooser(intent, title));
+                let viewIntent = new android.content.Intent(android.content.Intent.ACTION_VIEW);
+                var mimeType = this.findExtension(extension);
+                var uri = androidx.core.content.FileProvider.getUriForFile(
+                    application.android.context,
+                    `${application.android.context.getPackageName()}.provider`,
+                    new java.io.File(file.path)
+                );
+
+                viewIntent.setDataAndType(uri, mimeType);
+                viewIntent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+                viewIntent.addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                var chooserIntent = android.content.Intent.createChooser(viewIntent, title);
+                chooserIntent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);
+                chooserIntent.addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                console.log('handle-chooser >>> ', mimeType, extension, file.path);
+
+                application.android.context.startActivity(chooserIntent);
+
+
             } catch (e) {
                 console.log(e);
                 return false;
             }
             return true;
-        }, function (e: Error) {
+        }, function(e: Error) {
             console.log(e);
             return false;
         });

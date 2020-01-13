@@ -3,6 +3,7 @@
 *.log
 .idea
 !scripts/*.js
+demo/**/*
 demo/app/*.js
 !demo/karma.conf.js
 !demo/app/tests/*.js

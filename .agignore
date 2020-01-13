@@ -1,0 +1,12 @@
+node_modules/
+.git/
+assets/
+fonts/
+styles/
+dist/
+public/
+z.*/
+
+App_Resources/
+hooks/
+platforms/
