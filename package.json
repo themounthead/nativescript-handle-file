@@ -7,10 +7,10 @@
   "nativescript": {
     "platforms": {
       "tns-android": {
-        "version": "4.0.1"
+        "version": "6.0.1"
       },
       "tns-ios": {
-        "version": "4.0.1"
+        "version": "6.0.1"
       }
     }
   },
@@ -24,7 +24,8 @@
     "test.android": "cd demo && tns test android",
     "preparedemo": "npm run build && cd demo && tns plugin remove nativescript-handle-file && tns plugin add .. && tns install",
     "setup": "npm i && cd demo && npm i && cd .. && npm run build && cd demo && tns plugin add .. && cd ..",
-    "postclone": "npm i && node scripts/postclone.js"
+    "postclone": "npm i && node scripts/postclone.js",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
